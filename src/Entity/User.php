@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
@@ -43,6 +45,20 @@ class User
 
     #[ORM\Column]
     private ?float $weight = null;
+
+    /**
+     * @var Collection<int, Exercice>
+     */
+    #[ORM\OneToMany(targetEntity: Exercice::class, mappedBy: 'user')]
+    private Collection $exercices;
+
+    #[ORM\Column]
+    private array $Roles = [];
+
+    public function __construct()
+    {
+        $this->exercices = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -165,6 +181,47 @@ class User
     public function setWeight(float $weight): static
     {
         $this->weight = $weight;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Exercice>
+     */
+    public function getExercices(): Collection
+    {
+        return $this->exercices;
+    }
+
+    public function addExercice(Exercice $exercice): static
+    {
+        if (!$this->exercices->contains($exercice)) {
+            $this->exercices->add($exercice);
+            $exercice->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeExercice(Exercice $exercice): static
+    {
+        if ($this->exercices->removeElement($exercice)) {
+            if ($exercice->getUser() === $this) {
+                $exercice->setUser(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getRoles(): array
+    {
+        return $this->Roles;
+    }
+
+    public function setRoles(array $Roles): static
+    {
+        $this->Roles = $Roles;
 
         return $this;
     }

@@ -22,6 +22,9 @@ class Exercice
     #[ORM\Column]
     private ?int $sets = null;
 
+    #[ORM\ManyToOne(inversedBy: 'exercices')]
+    private ?user $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -59,6 +62,18 @@ class Exercice
     public function setSets(int $sets): static
     {
         $this->sets = $sets;
+
+        return $this;
+    }
+
+    public function getUser(): ?user
+    {
+        return $this->user;
+    }
+
+    public function setUser(?user $user): static
+    {
+        $this->user = $user;
 
         return $this;
     }
